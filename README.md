@@ -32,3 +32,15 @@ address.
 |:-------------:|:----------:|
 |   0b1000011   | 0b1100001  |
 
+#### About opcodes
+Where N is 0 <= N < 16  
+
+| Item    | Info                           |
+|---------|--------------------------------|
+| NNNN    | Address                        |
+| NN      | 8-Bit Constant                 |
+| N       | 4-Bit Constant                 |
+| X and Y | 4-Bit register Id              |
+| PC      | Program Counter                |
+| I       | 16-Bit Register (Memory Addr)  |
+| VN      | 16 (8-Bit) Available Registers |
