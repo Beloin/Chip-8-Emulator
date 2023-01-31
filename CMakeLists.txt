@@ -7,4 +7,4 @@ include_directories(.)
 include_directories(src)
 
 add_executable(8bit_emulator
-        src/main.cpp)
+        src/main.cpp src/Chip8.h src/Chip8.cpp)

@@ -22,6 +22,8 @@ is 12 bits wide, used with opcodes.
 - Delay Timer -> Used to time things in game
 - Sound Timer -> Beeping Sound
 
+### Display
+ - Works drawing sprites (8 bits wide up to 15 lines high)
 
 ### Opcode
  - Opcode are 2 bytes long stored in BigEndian format
@@ -44,3 +46,5 @@ Where N is 0 <= N < 16
 | PC      | Program Counter                |
 | I       | 16-Bit Register (Memory Addr)  |
 | VN      | 16 (8-Bit) Available Registers |
+
+See [here](https://en.wikipedia.org/wiki/CHIP-8#Virtual_machine_description:~:text=timer%20is%20nonzero.-,Opcode%20table,-%5Bedit%5D) for full opcodes
