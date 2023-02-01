@@ -24,7 +24,15 @@ private:
     unsigned char key[16];
 
     unsigned short opcode;
+
+    void clear_stack();
+
+    void clear_graphics();
+
+    void clear_registers();
+
 public:
+
     void initialize();
 
     void loadGame(const char *string);
@@ -34,6 +42,14 @@ public:
     bool drawFlag;
 
     void setKeys();
+
+    void clear_memory();
+
+    void beepPerSoundTier() const;
+
+    void switchFor0x0() const;
+
+    void switchFor0x8();
 };
 
 
