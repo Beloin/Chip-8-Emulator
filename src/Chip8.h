@@ -11,7 +11,7 @@ private:
     unsigned char memory[4096];
     unsigned char V[16]; // Registers
     unsigned short I; // Index register
-    unsigned short PC; // program counter
+    unsigned short pc; // program counter
 
     unsigned char gfx[64*32];
 
@@ -22,6 +22,18 @@ private:
     unsigned short sp;
 
     unsigned char key[16];
+
+    unsigned short opcode;
+public:
+    void initialize();
+
+    void loadGame(const char *string);
+
+    void emulateCycle();
+
+    bool drawFlag;
+
+    void setKeys();
 };
 
 

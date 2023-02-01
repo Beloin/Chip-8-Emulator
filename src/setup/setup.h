@@ -1,0 +1,3 @@
+void setupGraphics();
+
+void setupInput();

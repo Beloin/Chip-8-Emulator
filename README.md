@@ -43,7 +43,7 @@ Where N is 0 <= N < 16
 | NN      | 8-Bit Constant                 |
 | N       | 4-Bit Constant                 |
 | X and Y | 4-Bit register Id              |
-| PC      | Program Counter                |
+| pc      | Program Counter                |
 | I       | 16-Bit Register (Memory Addr)  |
 | VN      | 16 (8-Bit) Available Registers |
 
