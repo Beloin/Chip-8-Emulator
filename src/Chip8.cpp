@@ -82,26 +82,33 @@ void Chip8::emulateCycle() {
     // This left shift converts 1 Byte to two bytes and then put an OR mask on it
     opcode = memory[pc] << 8 | memory[pc + 1];
     switch (opcode & 0xF000) { // First 4 Bits
-        case 0xA000: // 0xANNN
-            I = opcode & 0x0FFF;
+        case 0x0000:
+            switchFor0x0();
             break;
-        case 0x1:
+
+        case 0x1000: {
             // 0x1NNN -> goto NNN
+            unsigned short addr = opcode & 0x0FFF;
+            pc = addr;
             break;
+        }
 
-        case 0x2:
+        case 0x2000:
             // 0x2NNN call subroutine at NNN
+            stack[sp] = pc;
+            ++sp;
+            pc = opcode & 0x0FFF;
             break;
 
-        case 0x3:
+        case 0x3000:
             // 0x3XNN skips next instruction if VX equals  NN
             break;
 
-        case 0x4:
+        case 0x4000:
             // 0x4XNN skips next instruction if VX not equals NN
             break;
 
-        case 0x5:
+        case 0x5000:
             // 0x5XY0 skips the next instruction if Vx equals Vy
         {
             int x = opcode & 0x0F00;
@@ -109,30 +116,44 @@ void Chip8::emulateCycle() {
 
             if (V[x] == V[y]) {
                 pc += 4; // 2 by default, +2 to skip the next opcode
+            } else {
+                pc += 2;
             }
 
             break;
         }
 
-        case 0x6:
+        case 0x6000:
             // 0x6XNN -> Sets Vx = NN
         {
             int x = opcode & 0x0F00;
             V[x] = opcode & 0x00FF;
-
+            pc += 2;
             break;
         }
 
-        case 0x8:
+        case 0x7000: {
+            unsigned char x = opcode & 0x0F00;
+            unsigned char value = opcode & 0x00FF;
+            V[x] += value;
+            pc += 2;
+            break;
+        }
+
+        case 0x8000:
             switchFor0x8();
             break;
 
-        case 0x0:
-            switchFor0x0();
+        case 0x9000:
+            break;
+
+        case 0xA000: // 0xANNN
+            I = opcode & 0x0FFF;
             break;
 
         default:
             printf("Unknown opcode: 0x%X\n", opcode);
+            break;
     }
 
     if (delay_timer > 0) {
@@ -153,10 +174,10 @@ void Chip8::switchFor0x0() const {
 }
 
 void Chip8::switchFor0x8() {
-    int x, y;
+    unsigned char x, y;
 
-    x = opcode & 0x0F00;
-    y = opcode & 0x00F0;
+    x = (opcode & 0x0F00) >> 8;
+    y = (opcode & 0x00F0) >> 4;
 
     switch (opcode & 0x000F) {
         case 0x0000:
@@ -180,20 +201,56 @@ void Chip8::switchFor0x8() {
             break;
 
         case 0x0004:
+            // Adds VY to VX. VF is set to 1 when there's a carry, and to 0 when there is not.
+            if (V[y] > (0xFF - V[x])) {
+                V[0xF] = 1;
+            } else {
+                V[0xF] = 0;
+            }
 
+            V[x] += V[y];
+            pc += 2;
             break;
 
         case 0x0005:
+            // VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there is not.
+            if (V[y] > V[x]) {
+                V[0xF] = 0;
+            } else {
+                V[0xF] = 1;
+            }
+
+            V[x] -= V[y];
+            pc += 2;
             break;
 
-        case 0x0006:
+        case 0x0006: {
+            unsigned char least_b = V[x] & 0x01; // XXXX XXXX & 0000 0001 -> 0000 000X
+            V[15] = least_b;
+            V[x] >>= 1;
+            pc += 2;
             break;
+        }
 
         case 0x0007:
+            // Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there is not.
+            if (V[y] < V[x]) {
+                V[0xF] = 0;
+            } else {
+                V[0xF] = 1;
+            }
+
+            V[x] = V[y] - V[x];
+            pc += 2;
             break;
 
-        case 0x000E:
+        case 0x000E: {
+            unsigned char most_b = (V[x] & 0x80) >> 7; // XXXX XXXX & 1000 0000 -> X000 0000 >> 7 -> 0000 000X
+            V[15] = most_b;
+            V[x] <<= 1;
+            pc += 2;
             break;
+        }
 
         default:
             printf("Unknown opcode: 0x%X\n", opcode);
