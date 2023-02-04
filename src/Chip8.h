@@ -13,7 +13,7 @@ private:
     unsigned short I; // Index register
     unsigned short pc; // program counter
 
-    unsigned char gfx[64*32];
+    unsigned char gfx[64*32]; // width x height
 
     unsigned char delay_timer;
     unsigned char sound_timer;
@@ -45,11 +45,15 @@ public:
 
     void clear_memory();
 
-    void beepPerSoundTier() const;
+    void beepPerSoundTier();
 
-    void switchFor0x0() const;
+    void switchFor0x0();
 
     void switchFor0x8();
+
+    void clearDisplay();
+
+    unsigned char getRandomNumber();
 };
 
 
