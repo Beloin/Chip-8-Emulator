@@ -54,6 +54,10 @@ public:
     void clearDisplay();
 
     unsigned char getRandomNumber();
+
+    void switchFor0xE();
+
+    void switchFor0xF();
 };
 
 

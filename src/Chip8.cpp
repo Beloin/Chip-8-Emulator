@@ -192,32 +192,53 @@ void Chip8::emulateCycle() {
         }
 
         case 0xD000: {
-            unsigned char x = opcode & 0x0F00 >> 8;
-            unsigned char y = opcode & 0x00F0 >> 4;
-            unsigned char n = opcode & 0x000F >> 0;
+            unsigned short x = opcode & 0x0F00 >> 8;
+            unsigned short y = opcode & 0x00F0 >> 4;
+            unsigned short n = opcode & 0x000F >> 0;
 
             x = V[x];
             y = V[y];
 
             V[0xF] = 0;
-            for (int i = 0; i < n; ++i) {
+            for (int y_line = 0; y_line < n; ++y_line) {
                 // Linha 0, coluna 1
                 // 0 [1] 2
                 // 3  4  5
                 // 6  7  8
                 // Use XOR to check for conflicts > 1
-                unsigned short pixel = memory[I + i];
-                unsigned short index = (x * 32) + (y);
+                unsigned short pixel = memory[I + y_line];
 
-                for (int j = 0; j < 8; ++j) {
+                for (int x_line = 0; x_line < 8; ++x_line) { // THIS IS FOR XOR OPERATION
+                    unsigned short bit = 0x80 >> x_line; // 0x80 == 0b1000_0000
+                    if ((pixel & bit) != 0) { // If pixel & bit == 0, no bit was flipped
+                        int index = (x + x_line) + ((y + y_line) * 64);
+                        unsigned char current_pixel = gfx[index];
+
+                        if (current_pixel) {
+                            V[0xF] = 1;
+                        }
+
+                        gfx[index] ^= 1;
+                    }
+
 
                 }
 
             }
 
             drawFlag = true;
+            pc += 2;
             break;
         }
+
+        case 0xE000:
+            switchFor0xE();
+            break;
+
+        case 0xF000:
+            switchFor0xF();
+            break;
+
 
         default:
             printf("Unknown opcode: 0x%X\n", opcode);
@@ -328,6 +349,69 @@ void Chip8::switchFor0x8() {
             pc += 2;
             break;
         }
+
+        default:
+            printf("Unknown opcode: 0x%X\n", opcode);
+    }
+}
+
+void Chip8::switchFor0xE() {
+    unsigned short x = opcode & 0x0F00 >> 8;
+    switch (opcode & 0x00FF) {
+        case 0x009E: {
+            if (key[V[x]] != 0) {
+                pc += 4;
+            } else {
+                pc += 2;
+            }
+
+            break;
+        }
+
+        case 0x00A1: {
+            if (key[V[x]] != 0) {
+                pc += 2;
+            } else {
+                pc += 4;
+            }
+
+            break;
+        }
+
+        default:
+            printf("Unknown opcode: 0x%X\n", opcode);
+    }
+
+}
+
+void Chip8::switchFor0xF() {
+    switch (opcode & 0x00FF) {
+        case 0x0007:
+            break;
+
+        case 0x000A:
+            break;
+
+        case 0x0015:
+            break;
+
+        case 0x0018:
+            break;
+
+        case 0x001E:
+            break;
+
+        case 0x0029:
+            break;
+
+        case 0x0033:
+            break;
+
+        case 0x0055:
+            break;
+
+        case 0x0065:
+            break;
 
         default:
             printf("Unknown opcode: 0x%X\n", opcode);
