@@ -3,6 +3,7 @@
 //
 
 #include <cstdio>
+#include "random"
 #include "Chip8.h"
 #include "setup/setup.h"
 
@@ -65,6 +66,7 @@ void Chip8::loadGame(const char *string) {
 
         if (i + read_count > 0xFFF - 0x200) {
             // Throw error, cannot read game, too big;
+            printf("Game too big :(");
         }
 
         for (; i < i + read_count; ++i) {
@@ -239,7 +241,6 @@ void Chip8::emulateCycle() {
             switchFor0xF();
             break;
 
-
         default:
             printf("Unknown opcode: 0x%X\n", opcode);
             break;
@@ -259,7 +260,7 @@ void Chip8::emulateCycle() {
 void Chip8::switchFor0x0() {
     switch (opcode & 0x00FF) {
         case 0xE0:
-            clearDisplay();
+            clear_graphics();
             break;
 
         case 0xEE:
@@ -356,7 +357,7 @@ void Chip8::switchFor0x8() {
 }
 
 void Chip8::switchFor0xE() {
-    unsigned short x = opcode & 0x0F00 >> 8;
+    unsigned char x = opcode & 0x0F00 >> 8;
     switch (opcode & 0x00FF) {
         case 0x009E: {
             if (key[V[x]] != 0) {
@@ -385,33 +386,75 @@ void Chip8::switchFor0xE() {
 }
 
 void Chip8::switchFor0xF() {
+    unsigned short x = opcode & 0x0F00 >> 8;
     switch (opcode & 0x00FF) {
         case 0x0007:
+            V[x] = delay_timer;
+            pc += 2;
             break;
 
         case 0x000A:
+            V[x] = getKey();
+            pc += 2;
             break;
 
         case 0x0015:
+            delay_timer = V[x];
+            pc += 2;
             break;
 
         case 0x0018:
+            sound_timer = V[x];
+            pc += 2;
             break;
 
         case 0x001E:
+            I += V[x];
+            pc += 2;
             break;
 
-        case 0x0029:
+        case 0x0029: {
+            // Sets I to the location of the sprite for the character in VX. Characters 0-F (in hexadecimal) are represented by a 4x5 font.
+            // The location are in the memory
+            unsigned char hexa = V[x]; // 0 -> 0xF
+            char reference = (char) (5 * hexa); // 0 -> 75
+            I = memory[reference];
+            pc += 2;
             break;
+        }
 
-        case 0x0033:
-            break;
+        case 0x0033: {
+            // Store BCD representation of VX in M(I)..M(I+2)
+            // VX -> 255 -> 1111 1111
+            char unit = (char) (V[x] % 10);
+            char tens = (char) (V[x] / 10);
+            char hundreds = (char) (V[x] / 100);
 
-        case 0x0055:
-            break;
+            memory[I + 0] = unit;
+            memory[I + 1] = tens;
+            memory[I + 2] = hundreds;
 
-        case 0x0065:
+            pc += 2;
             break;
+        }
+
+        case 0x0055: {
+            for (int i = 0x0; i < 0xF; ++i) {
+                memory[I + i] = V[x];
+            }
+
+            pc += 2;
+            break;
+        }
+
+        case 0x0065: {
+            for (int i = 0x0; i < 0xF; ++i) {
+                V[x] = memory[I + i];
+            }
+
+            pc += 2;
+            break;
+        }
 
         default:
             printf("Unknown opcode: 0x%X\n", opcode);
@@ -422,4 +465,26 @@ void Chip8::beepPerSoundTier() {
     if (sound_timer == 1) {
         printf("BEEEEEEEP\n");
     }
+}
+
+unsigned char Chip8::getKey() {
+    return wait_for_key();
+}
+
+void Chip8::setKeys() {
+    char pressed = current_pressed_key();
+    for (int i = 0; i < 0xF; ++i) {
+        key[i] = pressed == i;
+    }
+}
+
+#define RANDMAX 12
+
+unsigned char Chip8::getRandomNumber() {
+    std::random_device dev;
+    std::mt19937 rng(dev())
+
+    unsigned char random = (char) (std::rand() % 16);
+
+    return random;
 }

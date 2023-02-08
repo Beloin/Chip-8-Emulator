@@ -21,6 +21,7 @@ private:
     unsigned short stack[16]; // In order to get back from JUMP or call subroutine
     unsigned short sp;
 
+    // This is used as a "Boolean" array which see if key[X], where 0 < X < 16, is pressed or not
     unsigned char key[16];
 
     unsigned short opcode;
@@ -51,13 +52,13 @@ public:
 
     void switchFor0x8();
 
-    void clearDisplay();
-
     unsigned char getRandomNumber();
 
     void switchFor0xE();
 
     void switchFor0xF();
+
+    unsigned char getKey();
 };
 
 
