@@ -8,7 +8,9 @@
 
 void drawGraphics();
 
-// TODO: Implement GLUT
+void drawGraphics() {
+
+}
 
 Chip8 chip8;
 

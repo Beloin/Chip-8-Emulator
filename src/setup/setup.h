@@ -1,10 +1,9 @@
+#ifndef INC_8BIT_EMULATOR_SETUP_H
+#define INC_8BIT_EMULATOR_SETUP_H
+
 void setupGraphics();
 
 void setupInput();
-
-char current_pressed_key();
-
-char wait_for_key();
 
 unsigned char chip8_fontset[80] = {
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -24,3 +23,5 @@ unsigned char chip8_fontset[80] = {
         0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
         0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
+
+#endif

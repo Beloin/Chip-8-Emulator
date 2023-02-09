@@ -4,6 +4,7 @@
 
 #ifndef INC_8BIT_EMULATOR_CHIP8_H
 #define INC_8BIT_EMULATOR_CHIP8_H
+#include "random"
 
 
 class Chip8 {
@@ -13,7 +14,7 @@ private:
     unsigned short I; // Index register
     unsigned short pc; // program counter
 
-    unsigned char gfx[64*32]; // width x height
+    unsigned char gfx[64 * 32]; // width x height
 
     unsigned char delay_timer;
     unsigned char sound_timer;
@@ -26,25 +27,18 @@ private:
 
     unsigned short opcode;
 
-    void clear_stack();
+    // Random device and engine
+    std::mt19937 rng;
+    std::random_device dev;
+    std::uniform_int_distribution<std::mt19937::result_type> dist16;
 
-    void clear_graphics();
+    void clearStack();
 
-    void clear_registers();
+    void clearGraphics();
 
-public:
+    void clearRegisters();
 
-    void initialize();
-
-    void loadGame(const char *string);
-
-    void emulateCycle();
-
-    bool drawFlag;
-
-    void setKeys();
-
-    void clear_memory();
+    void clearMemory();
 
     void beepPerSoundTier();
 
@@ -59,6 +53,20 @@ public:
     void switchFor0xF();
 
     unsigned char getKey();
+
+    void configureRandom();
+
+public:
+
+    void initialize();
+
+    void loadGame(const char *string);
+
+    void emulateCycle();
+
+    bool drawFlag;
+
+    void setKeys();
 };
 
 

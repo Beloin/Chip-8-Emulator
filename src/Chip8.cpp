@@ -6,12 +6,14 @@
 #include "random"
 #include "Chip8.h"
 #include "setup/setup.h"
+#include "utils/input_utils.h"
 
 void Chip8::initialize() {
-    clear_graphics();
-    clear_stack();
-    clear_registers();
-    clear_memory();
+    clearGraphics();
+    clearStack();
+    clearRegisters();
+    clearMemory();
+    configureRandom();
 
     pc = 0x200;
     opcode = 0;
@@ -23,27 +25,34 @@ void Chip8::initialize() {
     }
 
     // Reset Timers
+    delay_timer = 0;
+    sound_timer = 0;
 }
 
-void Chip8::clear_memory() {
+void Chip8::configureRandom() {
+    rng = std::mt19937(dev());
+    dist16 = std::uniform_int_distribution<std::mt19937::result_type>(0, 15);
+}
+
+void Chip8::clearMemory() {
     for (unsigned char &i: memory) {
         i = 0;
     }
 }
 
-void Chip8::clear_registers() {
+void Chip8::clearRegisters() {
     for (unsigned char &i: V) {
         i = 0;
     }
 }
 
-void Chip8::clear_graphics() {
+void Chip8::clearGraphics() {
     for (unsigned char &i: gfx) {
         i = 0;
     }
 }
 
-void Chip8::clear_stack() {
+void Chip8::clearStack() {
     for (unsigned short &i: stack) {
         i = 0;
     }
@@ -53,7 +62,7 @@ void Chip8::loadGame(const char *string) {
     std::FILE *fp = std::fopen(string, "rb");
     if (!fp) {
         // Throw...
-        std::perror("");
+        std::perror("There's a problem with the file.");
     }
 
     int buffer_size = 1000;
@@ -136,7 +145,7 @@ void Chip8::emulateCycle() {
             int y = opcode & 0x00F0 >> 4;
 
             if (V[x] == V[y]) {
-                pc += 4; // 2 by default, +2 to skip the next opcode
+                pc += 4; // 2 by default, +2 to skip the next utils
             } else {
                 pc += 2;
             }
@@ -170,7 +179,7 @@ void Chip8::emulateCycle() {
             int y = opcode & 0x00F0 >> 4;
 
             if (V[x] != V[y]) {
-                pc += 4; // 2 by default, +2 to skip the next opcode
+                pc += 4; // 2 by default, +2 to skip the next utils
             } else {
                 pc += 2;
             }
@@ -242,7 +251,7 @@ void Chip8::emulateCycle() {
             break;
 
         default:
-            printf("Unknown opcode: 0x%X\n", opcode);
+            printf("Unknown utils: 0x%X\n", opcode);
             break;
     }
 
@@ -260,7 +269,7 @@ void Chip8::emulateCycle() {
 void Chip8::switchFor0x0() {
     switch (opcode & 0x00FF) {
         case 0xE0:
-            clear_graphics();
+            clearGraphics();
             break;
 
         case 0xEE:
@@ -268,7 +277,7 @@ void Chip8::switchFor0x0() {
             break;
 
         default:
-            printf("Unknown opcode: 0x%X\n", opcode);
+            printf("Unknown utils: 0x%X\n", opcode);
     }
 }
 
@@ -352,7 +361,7 @@ void Chip8::switchFor0x8() {
         }
 
         default:
-            printf("Unknown opcode: 0x%X\n", opcode);
+            printf("Unknown utils: 0x%X\n", opcode);
     }
 }
 
@@ -380,7 +389,7 @@ void Chip8::switchFor0xE() {
         }
 
         default:
-            printf("Unknown opcode: 0x%X\n", opcode);
+            printf("Unknown utils: 0x%X\n", opcode);
     }
 
 }
@@ -457,7 +466,7 @@ void Chip8::switchFor0xF() {
         }
 
         default:
-            printf("Unknown opcode: 0x%X\n", opcode);
+            printf("Unknown utils: 0x%X\n", opcode);
     }
 }
 
@@ -468,23 +477,17 @@ void Chip8::beepPerSoundTier() {
 }
 
 unsigned char Chip8::getKey() {
-    return wait_for_key();
+    return waitForKey();
 }
 
 void Chip8::setKeys() {
-    char pressed = current_pressed_key();
+    char pressed = currentPressedKey();
     for (int i = 0; i < 0xF; ++i) {
         key[i] = pressed == i;
     }
 }
 
-#define RANDMAX 12
-
 unsigned char Chip8::getRandomNumber() {
-    std::random_device dev;
-    std::mt19937 rng(dev())
-
-    unsigned char random = (char) (std::rand() % 16);
-
-    return random;
+    unsigned long random_int = dist16(rng);
+    return (char) (random_int % 16);
 }
