@@ -51,7 +51,7 @@ See [here](https://en.wikipedia.org/wiki/CHIP-8#Virtual_machine_description:~:te
 
 ## More info:
 
-    - [Pong Story](http://www.pong-story.com/chip8/)
-    - [GLFW](https://www.glfw.org/docs/latest)
-    - [Kotlin CHIP8 Implementation](https://github.com/badlogic/chip8)
-    - [OpenGL Tutorial](https://www.youtube.com/watch?v=45MIykWJ-C4&t=696s&ab_channel=freeCodeCamp.org)
+ - [Pong Story](http://www.pong-story.com/chip8/)
+ - [GLFW](https://www.glfw.org/docs/latest)
+ - [Kotlin CHIP8 Implementation](https://github.com/badlogic/chip8)
+ - [OpenGL Tutorial](https://www.youtube.com/watch?v=45MIykWJ-C4&t=696s&ab_channel=freeCodeCamp.org)
