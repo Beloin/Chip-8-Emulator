@@ -51,6 +51,7 @@ See [here](https://en.wikipedia.org/wiki/CHIP-8#Virtual_machine_description:~:te
 
 ## More info:
 
+ - [Main Tutorial](https://multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/)
  - [Pong Story](http://www.pong-story.com/chip8/)
  - [GLFW](https://www.glfw.org/docs/latest)
  - [Kotlin CHIP8 Implementation](https://github.com/badlogic/chip8)
