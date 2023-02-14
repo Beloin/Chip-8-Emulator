@@ -48,3 +48,10 @@ Where N is 0 <= N < 16
 | VN      | 16 (8-Bit) Available Registers |
 
 See [here](https://en.wikipedia.org/wiki/CHIP-8#Virtual_machine_description:~:text=timer%20is%20nonzero.-,Opcode%20table,-%5Bedit%5D) for full opcodes
+
+## More info:
+
+    - [Pong Story](http://www.pong-story.com/chip8/)
+    - [GLFW](https://www.glfw.org/docs/latest)
+    - [Kotlin CHIP8 Implementation](https://github.com/badlogic/chip8)
+    - [OpenGL Tutorial](https://www.youtube.com/watch?v=45MIykWJ-C4&t=696s&ab_channel=freeCodeCamp.org)
